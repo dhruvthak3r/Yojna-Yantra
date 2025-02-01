@@ -47,6 +47,11 @@ def retrieve_documents(indices, scheme_data):
 
 def generate_response(retrieved_docs, model_name, query_text, project_id):
     try:
+        context = "\n\n".join(
+            f"Title: {doc['title']}\nDetails: {doc['details']}\nURL: {doc['url']}"
+            for doc in retrieved_docs
+        )
+        
         llm = ChatVertexAI(
             model=model_name,
             temperature=0.7,
@@ -56,9 +61,11 @@ def generate_response(retrieved_docs, model_name, query_text, project_id):
             project=project_id
         )
 
-        prompt = ChatPromptTemplate([
-            ("system", "You are an empathetic AI assistant for assisting users about information about various government welfare schemes in Maharashtra. Answer only factually with the information provided below. It is critical for answers to be correct and precise. Make responses short and to the point."),
-            ("human", "{user_input}"),
+       prompt = ChatPromptTemplate.from_messages([ 
+            ("system", "You are an AI assistant for government welfare schemes. "
+                       "Use ONLY the following information to answer. Keep answers precise and factual.\n\n"
+                       "Relevant Documents:\n{context}"),
+            ("human", "Question: {query}")
         ])
 
         prompt_value = prompt.invoke({"user_input": query_text})
