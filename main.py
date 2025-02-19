@@ -7,6 +7,8 @@ from fastapi import FastAPI, HTTPException, Request
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 from models import QueryRequest
+from fastapi.encoders import jsonable_encoder
+
 from Services import (
     load_faiss_index,
     load_scheme_data,
@@ -44,10 +46,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # Telegram Webhook Handler
-@app.post("/webhook/query")
-async def telegram_webhook(request: Request):
+@app.post("/webhook/query",response_model=QueryResponse)
+async def telegram_webhook(request: QueryRequest):
     try:
-        update = await request.json()
+        update = await jsonable_encoder(request)
 
         if "message" in update:
             chat_id = update["message"]["chat"]["id"]
