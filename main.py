@@ -80,7 +80,7 @@ async def process_telegram_query(chat_id: int, query_text: str):
         )
         
         response = await asyncio.to_thread(
-        lambda: generate_response(
+        generate_response(
         retrieved_docs=retrieved_docs,
         model_name=app.state.llm_model,
         query_text=query_text,
@@ -90,7 +90,7 @@ async def process_telegram_query(chat_id: int, query_text: str):
         
         message = response.response_text if isinstance(response, QueryResponse) else "Sorry, I couldn't process that."
         
-        send_response = requests.post(
+        requests.post(
             f"{TELEGRAM_API_URL}/sendMessage",
             json={"chat_id": chat_id,
                 "text": message,
