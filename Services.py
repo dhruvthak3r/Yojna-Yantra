@@ -38,7 +38,11 @@ def retrieve_documents(indices, scheme_data):
         scheme_info = {
             "title": document.get("name", "No Title"),
             "details": document.get("details", "No Description"),
-            "url": document.get("url", "No URL")
+            "url": document.get("url", "No URL"),
+            "benefits" : document.get("benefits","No benefits"),
+            "eligiblity" : document.get("eligiblity","No eligiblity"),
+            "application-process" : document.get("application_process","no application-process"),
+            "documents-required" : document.get("documents_required","no documents-required"),
         }
 
         documents.append(scheme_info)
@@ -62,7 +66,7 @@ def generate_response(retrieved_docs, model_name, query_text, project_id):
 
         prompt = ChatPromptTemplate.from_messages([ 
             ("system", "You are an AI assistant for government welfare schemes. "
-                       "Use ONLY the following information to answer. Keep answers precise and factual.\n\n"
+                       "Use ONLY the following information to answer and provide the url for the scheme(s) from the documents fetched and also format the message properly so that it is readable by the users,make sure users get the best possible experience with your responses. Keep answers precise and factual.\n\n"
                        "Relevant Documents:\n{context}"),
             ("human", "Question: {query}")
         ])
