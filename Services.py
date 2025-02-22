@@ -5,7 +5,6 @@ import faiss
 from langchain_huggingface.embeddings import HuggingFaceEndpointEmbeddings
 from langchain_google_vertexai import ChatVertexAI
 from langchain_core.prompts import ChatPromptTemplate
-from google.auth.exceptions import DefaultCredentialsError
 from pydantic import BaseModel
 
 from models import QueryResponse

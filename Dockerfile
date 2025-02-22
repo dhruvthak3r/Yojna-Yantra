@@ -18,9 +18,6 @@ USER myuser
 # Copy virtual environment from the builder stage
 COPY --from=builder /app/venv /app/venv
 
-# Ensure the virtual environment is used
-ENV PATH="/app/venv/bin:$PATH"
-
 # Install Uvicorn explicitly
 RUN pip install --no-cache-dir uvicorn
 
