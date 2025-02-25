@@ -12,11 +12,9 @@ from huggingface_hub import login
 from models import QueryResponse
 
 # Load Hugging Face API Key from environment variable
-api_key = os.getenv("HUGGINGFACE_API_KEY")
-if api_key:
-    login(api_key)
-else:
-    raise ValueError("HUGGINGFACE_API_KEY is not set! Please set it before running tests.")
+api_key = "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"
+login(api_key)
+
 
 @pytest.mark.asyncio
 async def test_generate_response():
