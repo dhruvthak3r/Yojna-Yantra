@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+import os
 from Services import (
     generate_response,
     retrieve_documents,
@@ -10,7 +11,7 @@ from Services import (
 from huggingface_hub import login
 from models import QueryResponse
 
-login("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")  # Replace with your actual token
+login(os.getenv("HUGGINGFACE_API"))  # Replace with your actual token
 
 @pytest.mark.asyncio
 async def test_generate_response():
