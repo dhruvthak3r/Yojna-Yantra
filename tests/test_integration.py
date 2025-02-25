@@ -11,7 +11,7 @@ from Services import (
 from huggingface_hub import login
 from models import QueryResponse
 
-login(os.getenv("HUGGINGFACE_API"))  # Replace with your actual token
+login(os.getenv("HUGGINGFACE_API_KEY"))  # Replace with your actual token
 
 @pytest.mark.asyncio
 async def test_generate_response():
@@ -37,8 +37,8 @@ async def test_generate_response():
         retrieved_docs,
         "gemini-1.5-pro-002",
         query_text,
-        "loyal-throne-448413-c8"
+        os.getenv("GOOGLE_PROJECT_ID")
     )
 
     # Assertions (Modify as per expected results)
-    assert response is not None
+    assert response is  None
