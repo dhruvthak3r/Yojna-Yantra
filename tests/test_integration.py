@@ -12,7 +12,7 @@ from huggingface_hub import login
 from models import QueryResponse
 
 # Load Hugging Face API Key from environment variable
-api_key = "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"
+api_key = os.getenv("HUGGINGFACE_API_KEY")
 login(api_key)
 
 
