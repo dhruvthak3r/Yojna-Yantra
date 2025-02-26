@@ -8,15 +8,12 @@ from Services import (
     load_faiss_index,
     load_scheme_data,
 )
-from huggingface_hub import login
+from langchain_huggingface.embeddings import HuggingFaceEndpointEmbeddings
 from models import QueryResponse
 from dotenv import load_dotenv
 load_dotenv()
 # Load Hugging Face API Key from environment variable
-api_key = os.getenv("HUGGINGFACE_API_KEY")
-if not api_key:
-    raise ValueError("HUGGINGFACE_API_KEY is not set. Please configure the environment variable.")
-login(api_key)
+
 
 @pytest.mark.asyncio
 async def test_generate_response():
