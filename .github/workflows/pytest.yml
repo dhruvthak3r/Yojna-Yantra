@@ -22,9 +22,11 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: 
-          pip install -r requirements.txt
-          pip install pytest
+        run: |
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            pip install pytest  # Install pytest separately
+        
 
       - name: Run tests
         run: pytest -v
