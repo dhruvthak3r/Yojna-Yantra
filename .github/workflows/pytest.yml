@@ -26,3 +26,11 @@ jobs:
 
       - name: Run tests
         run: pytest -v
+      
+      - name: 
+        if: success()
+        run :
+          git fetch origin main
+          git checkout main
+          git merge --ff-only test
+          git push origin main
