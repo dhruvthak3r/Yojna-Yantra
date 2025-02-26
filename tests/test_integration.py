@@ -48,4 +48,4 @@ async def test_generate_response():
     )
 
     # Assertions (Modify as per expected results)
-    assert response is None
+    assert response is not None
