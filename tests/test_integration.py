@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from huggingface_hub import login
 load_dotenv()
 # Load Hugging Face API Key from environment variable
-api_key = os.getenv("GFACE_API_KEY")
+api_key = os.getenv("HUGGINGFACE_API_KEY")
 if not api_key:
     raise ValueError("error loading api key")
 
