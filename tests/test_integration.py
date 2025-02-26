@@ -13,9 +13,10 @@ from models import QueryResponse
 
 # Load Hugging Face API Key from environment variable
 api_key = os.getenv("HUGGINGFACE_API_KEY")
-if api_key is None:
- print("lmao")
+if not api_key:
+    raise ValueError("HUGGINGFACE_API_KEY is not set. Please configure the environment variable.")
 login(api_key)
+
 @pytest.mark.asyncio
 async def test_generate_response():
     """Tests the generate_response function with FAISS index and scheme data retrieval."""
