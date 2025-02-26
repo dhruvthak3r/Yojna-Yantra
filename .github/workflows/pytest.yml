@@ -41,4 +41,5 @@ jobs:
           git fetch origin
           git checkout main
           git merge --ff-only origin/test
+          git merge --allow-unrelated-histories origin/test
           git push origin main
