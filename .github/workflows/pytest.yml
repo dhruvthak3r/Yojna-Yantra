@@ -21,16 +21,10 @@ jobs:
         with:
           credentials_json: ${{secrets.GCLOUD_SERVICE_KEY }}
 
-      - name: ijainstall Google Cloud SDK
+      - name: install Google Cloud SDK
         run: |
           sudo apt-get update && sudo apt-get install -y google-cloud-cli
           gcloud --version
-
-      - name: Configure gcloud CLI
-        run: |
-          gcloud auth activate-service-account --key-file <(echo '${{secrets.GCLOUD_SERVICE_KEY }}')
-          gcloud config set project loyal-throne-448413-c8
-          gcloud config set compute/region asia-south1
 
       - name: Set up Python
         uses: actions/setup-python@v4
