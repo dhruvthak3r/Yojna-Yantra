@@ -20,9 +20,8 @@ def load_scheme_data(data_file):
 
 def query_faiss_index(index, query_text, model_name):
     model = SentenceTransformer(model_name)
-    hf_embeddings = model.encode(query_text)
-    
-    query_embedding = hf_embeddings.embed_documents([query_text])
+    query_embedding = model.encode([query_text])  # Returns a NumPy array
+
     query_embedding = np.array(query_embedding).astype('float32')
     
     D, I = index.search(query_embedding, k=5)
