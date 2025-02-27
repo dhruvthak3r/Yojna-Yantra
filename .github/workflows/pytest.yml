@@ -35,6 +35,7 @@ jobs:
         if: success()
         run : |
           git fetch --all
+          git clean -fd
           git checkout main
           git pull origin main
           git merge test --allow-unrelated-histories
