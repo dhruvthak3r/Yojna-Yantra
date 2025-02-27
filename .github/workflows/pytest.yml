@@ -25,7 +25,7 @@ jobs:
         run: |
             pip install --upgrade pip
             pip install -r requirements.txt
-            pip install pytest  
+            pip install pytest-asyncio 
         
 
       - name: Run tests
@@ -35,7 +35,7 @@ jobs:
         if: success()
         run : |
           git fetch --all
-          git clean -fd
+          git commit -a -m "please work"
           git checkout main
           git pull origin main
           git merge test --allow-unrelated-histories
