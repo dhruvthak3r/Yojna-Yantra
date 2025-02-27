@@ -16,6 +16,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{secrets.GCLOUD_SERVICE_KEY }}
+
+      - name: Install Google Cloud SDK
+        run: |
+          sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+          gcloud --version
+
+      - name: Configure gcloud CLI
+        run: |
+          gcloud auth activate-service-account --key-file <(echo '${{secrets.GCLOUD_SERVICE_KEY }}')
+          gcloud config set project loyal-throne-448413-c8
+          gcloud config set compute/region asia-south1
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -23,20 +39,29 @@ jobs:
 
       - name: Install dependencies
         run: |
-            pip install --upgrade pip
-            pip install -r requirements.txt
-            pip install pytest-asyncio 
-        
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-asyncio 
 
       - name: Run tests
         run: pytest -v
-      
-      - name: merge into main
-        if: success()
-        run : |
-          git fetch --all
-          git commit -a -m "please work"
+
+  merge:
+    needs: test  
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge test into main
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
           git checkout main
           git pull origin main
-          git merge test --allow-unrelated-histories
+          git merge test --no-ff -m "Merge test branch into main"
           git push origin main
