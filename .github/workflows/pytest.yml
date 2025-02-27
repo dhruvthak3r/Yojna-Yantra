@@ -21,7 +21,7 @@ jobs:
         with:
           credentials_json: ${{secrets.GCLOUD_SERVICE_KEY }}
 
-      - name: Install Google Cloud SDK
+      - name: ijainstall Google Cloud SDK
         run: |
           sudo apt-get update && sudo apt-get install -y google-cloud-cli
           gcloud --version
