@@ -35,7 +35,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest-asyncio 
+          pip install pytest
 
       - name: Run tests
         run: pytest -v
@@ -53,8 +53,8 @@ jobs:
 
       - name: Merge test into main
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.name "dhruvthak3r"
+          git config --global user.email "dhruvthaker777@gmail.com"
           git checkout main
           git pull origin main
           git merge test --no-ff -m "Merge test branch into main"
