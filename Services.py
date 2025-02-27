@@ -3,6 +3,8 @@ import json
 import numpy as np
 import faiss
 from langchain_huggingface.embeddings import HuggingFaceEndpointEmbeddings
+from sentence_transformers import SentenceTransformer
+
 from langchain_google_vertexai import ChatVertexAI
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel
@@ -17,12 +19,8 @@ def load_scheme_data(data_file):
         return json.load(f)
 
 def query_faiss_index(index, query_text, model_name):
-    api_key = os.getenv('HUGGINGFACE_API_KEY')
-    hf_embeddings = HuggingFaceEndpointEmbeddings(
-        model=model_name,
-        task="feature-extraction",
-        huggingfacehub_api_token=api_key,
-    )
+    model = SentenceTransformer(model_name)
+    hf_embeddings = model.encode(query_text)
     
     query_embedding = hf_embeddings.embed_documents([query_text])
     query_embedding = np.array(query_embedding).astype('float32')
