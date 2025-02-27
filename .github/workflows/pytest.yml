@@ -55,7 +55,7 @@ jobs:
         run: |
           git config --global user.name "dhruvthak3r"
           git config --global user.email "dhruvthaker777@gmail.com"
-          git checkout main
+          git checkout -b main origin/main
           git pull origin main
           git merge test --no-ff -m "Merge test branch into main"
           git push origin main
