@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI):
     app.state.project_id = "loyal-throne-448413-c8"
     
     # Set up Telegram Webhook
-    set_webhook_response = requests.post(f"{TELEGRAM_API_URL}/setWebhook", json={"url": f"{WEBHOOK_URL}/webhook/query"})
+    set_webhook_response = requests.post(f"{TELEGRAM_API_URL}/setWebhook", json={"url": f"{WEBHOOK_URL}/chat.telegram"})
     if not set_webhook_response.json().get("ok"):
         print("Failed to set webhook:", set_webhook_response.json())
 
@@ -46,7 +46,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # Telegram Webhook Handler
-@app.post("/webhook/query",response_model=QueryResponse)
+@app.post("/chat.telegram",response_model=QueryResponse)
 async def telegram_webhook(request: Request):
     try:
         update = await request.json()
