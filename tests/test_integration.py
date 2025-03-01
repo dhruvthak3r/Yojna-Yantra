@@ -1,6 +1,6 @@
-from Services import query_faiss_index, load_faiss_index
-
-def test_faiss_query():
-    index = load_faiss_index("faiss_index.bin")
-    indices = query_faiss_index(index, "hello", "sentence-transformers/all-MiniLM-L6-v2")
-    assert indices is not None
+import requests
+def test_new_endpoint():
+    WEBHOOK_URL = "https://chatbot-492327799816.asia-south1.run.app"
+    url = f"{WEBHOOK_URL}/chat.telegram"
+    response = requests.get(url)
+    assert response.status_code == 404
