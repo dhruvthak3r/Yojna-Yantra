@@ -10,7 +10,7 @@ ENV PATH="/home/builder/venv/bin:$PATH"
 COPY --chown=builder:builder requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY --chown=builder:builder rag_pipeline/ ./rag_pipeline/
+COPY --chown=builder:builder ./rag_pipeline /home/builder/rag_pipeline
 
 FROM python:3.11 AS final
 
