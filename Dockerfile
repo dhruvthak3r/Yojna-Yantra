@@ -1,27 +1,18 @@
-
-FROM python:3.11-slim AS builder
-WORKDIR /app
-
-
-COPY requirements.txt . 
-RUN python -m venv /app/venv && \
-    /app/venv/bin/pip install --no-cache-dir -r requirements.txt
-
-
+# Base Image
 FROM python:3.11-slim
+
+# Set working directory
 WORKDIR /app
 
+# Copy and install dependencies globally
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN useradd -m myuser
-USER myuser
-
-
-COPY --from=builder /app/venv /app/venv
-
+# Copy application code
 COPY . .
 
-
+# Expose port 8000
 EXPOSE 8000
 
-
-CMD ["/app/venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run Uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
