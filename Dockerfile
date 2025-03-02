@@ -1,4 +1,4 @@
-FROM Python:3.11 AS build
+FROM python:3.11 AS build
 
 RUN useradd --create-home builder
 WORKDIR /home/builder
@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=builder:builder rag_pipeline/ ./rag_pipeline/
 
-FROM Python:3.11 AS final
+FROM python:3.11 AS final
 
 RUN useradd --create-home builder
 WORKDIR /home/builder
