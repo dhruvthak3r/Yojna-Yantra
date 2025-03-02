@@ -1,40 +1,29 @@
-# Stage 1 - Build dependencies
-FROM python:3.11-slim AS build
+FROM python:3.11-slim AS builder
+WORKDIR /app
+
+# Copy requirements and install dependencies in a virtual environment
+COPY requirements.txt .
+RUN python -m venv /app/venv && \
+    /app/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# Stage 2: Final image
+FROM python:3.11-slim
+WORKDIR /app
 
 # Create a non-root user
-RUN useradd --create-home builder
-WORKDIR /home/builder
-USER builder
+RUN useradd -m myuser
 
-# Create virtual environment
-RUN python -m venv /home/builder/venv
-ENV PATH="/home/builder/venv/bin:$PATH"
+# Copy the virtual environment and set correct ownership
+COPY --from=builder --chown=myuser:myuser /app/venv /app/venv
 
-# Install dependencies
-COPY --chown=builder:builder requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy application files and ensure proper ownership
+COPY --chown=myuser:myuser . .
 
-# Copy only necessary app files
-COPY --chown=builder:builder . /home/builder/rag_pipeline
+# Switch to non-root user
+USER myuser
 
-# Stage 2 - Final lightweight image
-FROM python:3.11-slim AS final
-
-RUN useradd --create-home builder
-WORKDIR /home/builder
-USER builder
-
-# Copy venv from build stage
-COPY --from=build --chown=builder:builder /home/builder/venv /home/builder/venv
-ENV PATH="/home/builder/venv/bin:$PATH"
-
-# Copy application files (only needed ones)
-COPY --from=build --chown=builder:builder /home/builder/rag_pipeline /home/builder/rag_pipeline
-
-WORKDIR /home/builder/rag_pipeline
-
-# Expose the correct port for Cloud Run
+# Expose the application port
 EXPOSE 8000
 
-# Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start the application
+CMD ["/app/venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
