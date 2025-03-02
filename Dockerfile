@@ -1,18 +1,30 @@
-# Base Image
-FROM python:3.11-slim
+FROM Python:3.11 AS build
 
-# Set working directory
-WORKDIR /app
+RUN useradd --create-home builder
+WORKDIR /home/builder
+USER builder
 
-# Copy and install dependencies globally
-COPY requirements.txt .
+RUN python -m venv venv
+ENV PATH="/home/builder/venv/bin:$PATH"
+
+COPY --chown=builder:builder requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+COPY --chown=builder:builder rag_pipeline/ ./rag_pipeline/
 
-# Expose port 8000
+FROM Python:3.11 AS final
+
+RUN useradd --create-home builder
+WORKDIR /home/builder
+USER builder
+
+COPY --from=build --chown=builder:builder /home/builder/venv /home/builder/venv
+ENV PATH="/home/builder/venv/bin:$PATH"
+
+COPY --from=build --chown=builder:builder /home/builder/rag_pipeline /home/builder/rag_pipeline
+
+WORKDIR /home/builder/rag_pipeline
+
 EXPOSE 8000
 
-# Run Uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
