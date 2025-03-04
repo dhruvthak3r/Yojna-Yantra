@@ -24,7 +24,10 @@ load_dotenv()
 # Load environment variables
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
-WEBHOOK_URL ="https://chatbot-492327799816.asia-south1.run.app" # Your server's public URL
+WEBHOOK_URL ="https://chatbot-492327799816.asia-south1.run.app"
+
+if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+    raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set") # Your server's public URL
 
 # Lifespan Context Manager
 @asynccontextmanager
