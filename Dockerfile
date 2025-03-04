@@ -12,18 +12,15 @@ WORKDIR /app
 
 # Create a non-root user
 RUN useradd -m myuser
-
+USER myuser
 # Copy the virtual environment and set correct ownership
 COPY --from=builder --chown=myuser:myuser /app/venv /app/venv
 
 # Copy application files and ensure proper ownership
 COPY --chown=myuser:myuser . .
 
-# Switch to non-root user
-USER myuser
-
 # Expose the application port
 EXPOSE 8000
 
 # Start the application
-CMD ["/app/venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -69,6 +69,7 @@ jobs:
       - name: Re-build and Push Image
         run: |
           docker build -t dhruvthak3r/chatbot:latest .
+          docker run -p 8000:8000 dhruvthak3r/chatbot:latest 
           docker push dhruvthak3r/chatbot:latest
 
   deploy:
