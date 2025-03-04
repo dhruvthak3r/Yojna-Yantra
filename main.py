@@ -6,6 +6,7 @@ import requests
 from fastapi import FastAPI, HTTPException, Request
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
+from google.oauth2 import service_account
 from models import QueryRequest
 
 
@@ -26,17 +27,21 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 WEBHOOK_URL ="https://chatbot-492327799816.asia-south1.run.app"
 
-if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-    raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set") # Your server's public URL
+ # Manually load the service account credentials
+credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if not credentials_path:
+    raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set")
+
+credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
 # Lifespan Context Manager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.index = await asyncio.to_thread(load_faiss_index, "faiss_index.bin")
-    app.state.scheme_data = await asyncio.to_thread(load_scheme_data,"scheme_details.json")
-    app.state.embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
-    app.state.llm_model = "gemini-1.5-pro-002"
-    app.state.project_id = "loyal-throne-448413-c8"
+    app.state.index = await asyncio.to_thread(load_faiss_index, os.getenv("FAISS_INDEX_FILE"))
+    app.state.scheme_data = await asyncio.to_thread(load_scheme_data, os.getenv("SCHEME_DETAILS_FILE"))
+    app.state.embedding_model = os.getenv("EMBEDDING_MODEL")
+    app.state.llm_model = os.getenv("LLM_MODEL")
+    app.state.project_id = os.getenv("GOOGLE_PROJECT_ID")
     
     # Set up Telegram Webhook
     set_webhook_response = requests.post(f"{TELEGRAM_API_URL}/setWebhook", json={"url": f"{WEBHOOK_URL}/chat.telegram"})
@@ -83,30 +88,27 @@ async def process_telegram_query(chat_id: int, query_text: str):
         )
         
         response = await asyncio.to_thread(
-        generate_response(
-        retrieved_docs=retrieved_docs,
-        model_name=app.state.llm_model,
-        query_text=query_text,
-        project_id=app.state.project_id
-       )
-     )
+            generate_response,
+            retrieved_docs=retrieved_docs,
+            model_name=app.state.llm_model,
+            query_text=query_text,
+            project_id=app.state.project_id
+        )
+        
+        # Log the response to check its structur
         
         message = response.response_text if isinstance(response, QueryResponse) else "Sorry, I couldn't process that."
         
         requests.post(
             f"{TELEGRAM_API_URL}/sendMessage",
-            json={"chat_id": chat_id,
-                "text": message,
-                }
+            json={"chat_id": chat_id, "text": message}
         )
     
     except Exception as e:
         requests.post(
-      f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-      json={"chat_id": chat_id, "text": f"An error occurred! : {str(e)}"}
-)
-
-
+            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+            json={"chat_id": chat_id, "text": f"An error occurred! : {str(e)}"}
+        )
 
 # Fetch chat history (if needed)
 @app.get("/getUpdates/")
